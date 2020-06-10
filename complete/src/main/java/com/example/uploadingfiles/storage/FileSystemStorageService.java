@@ -51,6 +51,19 @@ public class FileSystemStorageService implements StorageService {
 	}
 
 	@Override
+	public void store(InputStream fileStream, String name) {
+		String filename = StringUtils.cleanPath(name);
+
+		try (InputStream inputStream = fileStream) {
+			Files.copy(inputStream, this.rootLocation.resolve(filename),
+					StandardCopyOption.REPLACE_EXISTING);
+		} catch (IOException e) {
+			throw new StorageException("Failed to store file " + filename, e);
+		}
+
+	}
+
+	@Override
 	public Stream<Path> loadAll() {
 		try {
 			return Files.walk(this.rootLocation, 1)
